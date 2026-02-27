@@ -1,33 +1,31 @@
 import streamlit as st
 import cv2
+import numpy as np
 from ultralytics import YOLO
+from streamlit_webrtc import webrtc_streamer, VideoProcessorBase
+import av
 
-st.title("Live YOLO Object Detection")
+st.title("🚀 Live YOLO Object Detection")
 
-model = YOLO("yolov8n.pt")
-
-run = st.checkbox("Start Camera")
-
-FRAME_WINDOW = st.image([])
-
-camera = st.camera_input("Take a picture")
-
-while run:
-    ret, frame = camera.read()
-    if not ret:
-        st.error("Failed to access camera.")
-        break
-
-    # Run YOLO
-    results = model(frame)
-
-    # Draw bounding boxes
-    annotated_frame = results[0].plot()
-
-    # Convert BGR to RGB
-    annotated_frame = cv2.cvtColor(annotated_frame, cv2.COLOR_BGR2RGB)
-
-    FRAME_WINDOW.image(annotated_frame)
+# Load YOLO model
+model = YOLO("yolov8n.pt")  # lightweight model for cloud
 
 
-camera.release()
+class YOLOVideoProcessor(VideoProcessorBase):
+    def recv(self, frame):
+        img = frame.to_ndarray(format="bgr24")
+
+        results = model(img)
+
+        annotated_frame = results[0].plot()
+
+        return av.VideoFrame.from_ndarray(annotated_frame, format="bgr24")
+
+
+webrtc_streamer(
+    key="yolo-live",
+    video_processor_factory=YOLOVideoProcessor
+)
+
+
+
