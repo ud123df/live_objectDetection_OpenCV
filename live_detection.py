@@ -7,20 +7,9 @@ import av
 
 st.title("🚀 Live YOLO Object Detection")
 
-# Load YOLO model
-model = YOLO("yolov8n.pt")  # lightweight model for cloud
+# Load lightweight YOLO model
+model = YOLO("yolov8n.pt")
 
-
-RTC_CONFIGURATION = {
-    "iceServers": [
-        {"urls": ["stun:stun.l.google.com:19302"]}
-    ]
-}
-
-webrtc_streamer(
-    key="yolo-live",
-    video_processor_factory=YOLOVideoProcessor,
-)
 
 class YOLOVideoProcessor(VideoProcessorBase):
     def recv(self, frame):
@@ -33,12 +22,13 @@ class YOLOVideoProcessor(VideoProcessorBase):
         return av.VideoFrame.from_ndarray(annotated_frame, format="bgr24")
 
 
+RTC_CONFIGURATION = {
+    "iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]
+}
+
 webrtc_streamer(
     key="yolo-live",
-    video_processor_factory=YOLOVideoProcessor
+    video_processor_factory=YOLOVideoProcessor,
+    rtc_configuration=RTC_CONFIGURATION,
+    media_stream_constraints={"video": True, "audio": False},
 )
-
-
-
-
-
