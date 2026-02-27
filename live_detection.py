@@ -20,7 +20,7 @@ RTC_CONFIGURATION = {
 webrtc_streamer(
     key="yolo-live",
     video_processor_factory=YOLOVideoProcessor,
-    
+)
 
 class YOLOVideoProcessor(VideoProcessorBase):
     def recv(self, frame):
@@ -37,6 +37,7 @@ webrtc_streamer(
     key="yolo-live",
     video_processor_factory=YOLOVideoProcessor
 )
+
 
 
 
