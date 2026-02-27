@@ -10,7 +10,7 @@ run = st.checkbox("Start Camera")
 
 FRAME_WINDOW = st.image([])
 
-camera = cv2.VideoCapture(0)
+camera = st.camera_input("Take a picture")
 
 while run:
     ret, frame = camera.read()
@@ -28,5 +28,6 @@ while run:
     annotated_frame = cv2.cvtColor(annotated_frame, cv2.COLOR_BGR2RGB)
 
     FRAME_WINDOW.image(annotated_frame)
+
 
 camera.release()
